@@ -1,10 +1,14 @@
 ﻿using Microsoft.QueryStringDotNET;
 using Microsoft.Toolkit.Uwp.Notifications;
+using PlatformMonitor.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Notifications;
@@ -27,11 +31,11 @@ namespace PlatformMonitor
     {
         public MainPage()
         {
-            this.InitializeComponent();
+			this.InitializeComponent();
         }
 
 		private void Button_Click(object sender, RoutedEventArgs e)
-		{			
+		{
 			string title = "Activity on the platform!";
 			string content = "Filus spotted";
 
