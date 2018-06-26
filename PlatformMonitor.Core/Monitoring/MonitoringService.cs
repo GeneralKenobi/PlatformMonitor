@@ -22,14 +22,16 @@ namespace PlatformMonitor.Core
 		/// <param name="url">Url of the site to check (typically one of educational platforms)</param>
 		/// <param name="name">Name of the person to look for</param>
 		/// <param name="period">Period between refreshing, in seconds. Should fit between the min and max allowed value</param>
-		public MonitoringService(string url, ObservableCollection<string> names, int period = 30)
+		public MonitoringService(string url, ObservableCollection<string> names, EventHandler<NameSpottedEventArgs> eventToRaise,
+			int period = 30)
 		{
 			Url = url;
 			Names = names;
 			Period = CheckPeriodValue(period);
+			EventToRaise = eventToRaise;
 		}
 
-		#endregion
+		#endregion		
 
 		#region Public Properties
 
@@ -66,6 +68,11 @@ namespace PlatformMonitor.Core
 		/// Provides means for canelling an ongoing monitoring
 		/// </summary>
 		private CancellationTokenSource Cancellation { get; set; }
+
+		/// <summary>
+		/// Event to raise when someone was found on the platform
+		/// </summary>
+		private EventHandler<NameSpottedEventArgs> EventToRaise { get; set; }
 
 		#endregion
 
@@ -203,10 +210,7 @@ namespace PlatformMonitor.Core
 		/// Notifies the <see cref="Monitoring"/>
 		/// </summary>
 		/// <param name="name"></param>
-		private void Notify(string name)
-		{
-
-		}
+		private void Notify(string name) => EventToRaise.Invoke(this, new NameSpottedEventArgs(Url, name, DateTime.Now));
 
 		/// <summary>
 		/// Checks if the period falls withing the allowed range and returns it. If not, the closest correct value will be returned.
