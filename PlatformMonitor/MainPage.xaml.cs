@@ -32,6 +32,10 @@ namespace PlatformMonitor
         public MainPage()
         {
 			this.InitializeComponent();
+			var vm = new ViewModel();
+			vm.MonitoringManager.CreateService("https://platforma.polsl.pl/rau3/", "Wadas", 10);
+			vm.MonitoringManager.NameSpotted += (s, e) => Button_Click(null, null);
+			vm.MonitoringManager.ManagedServices[0].StartMonitoring();
         }
 
 		private void Button_Click(object sender, RoutedEventArgs e)

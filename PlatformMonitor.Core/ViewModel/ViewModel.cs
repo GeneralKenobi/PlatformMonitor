@@ -8,6 +8,13 @@ namespace PlatformMonitor.Core
 	/// </summary>
     public class ViewModel : INotifyPropertyChangedImplemented
     {
+		#region Public properties
 
-    }
+		/// <summary>
+		/// Monitoring used in the given session
+		/// </summary>
+		public Monitoring MonitoringManager { get; private set; } = new Monitoring();
+
+		#endregion
+	}
 }
