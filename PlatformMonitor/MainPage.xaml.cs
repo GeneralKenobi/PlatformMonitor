@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.QueryStringDotNET;
+using Microsoft.Toolkit.Uwp.Notifications;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -26,5 +29,46 @@ namespace PlatformMonitor
         {
             this.InitializeComponent();
         }
-    }
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{			
+			string title = "Activity on the platform!";
+			string content = "Filus spotted";
+
+			// Construct the visuals of the toast
+			ToastVisual visual = new ToastVisual()
+			{
+				BindingGeneric = new ToastBindingGeneric()
+				{
+					Children =
+					{
+						new AdaptiveText()
+						{
+							Text = title
+						},
+
+						new AdaptiveText()
+						{
+							Text = content
+						},
+					},
+				}
+			};
+
+			// Now we can construct the final toast content
+			ToastContent toastContent = new ToastContent()
+			{
+				Visual = visual,
+			};
+
+			// And create the toast notification
+			var toast = new ToastNotification(toastContent.GetXml());
+
+			toast.ExpirationTime = DateTime.Now.AddDays(1);
+			toast.Tag = DateTime.Now.ToShortDateString();
+			toast.Group = "PlatformMonitor";
+
+			ToastNotificationManager.CreateToastNotifier().Show(toast);
+		}
+	}
 }

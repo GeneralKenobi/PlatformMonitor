@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CSharpEnhanced">
+      <HintPath>..\..\CSharpEnhanced\CSharpEnhanced\bin\Release\netstandard2.0\CSharpEnhanced.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
