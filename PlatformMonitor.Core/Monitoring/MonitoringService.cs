@@ -115,47 +115,94 @@ namespace PlatformMonitor.Core
 		{
 			// Create a new cancellation token source
 			Cancellation = new CancellationTokenSource();
-			var client = new HttpClient();
-
+			
+			// Keep going until cancellation is requested
 			while (!Cancellation.IsCancellationRequested)
 			{
-				var siteContent = await (await client.GetAsync(Url)).Content.ReadAsStringAsync();
+				await CheckAndNotifyAsync();
 
-				foreach (var name in Names)
-				{
-					if (siteContent.Contains(name))
-					{
-						Notify(name);
-					}
-				}
-
-				DateTime now = DateTime.Now;
-				DateTime nextCheck = now.AddSeconds(Period);
-
-				AutoResetEvent waitHandle = new AutoResetEvent(false);
-
-				TimerCallback timerCallback = (x) =>
-				{
-					int remainingTime = (int)Math.Max(Math.Round((nextCheck - DateTime.Now).TotalSeconds), 0);
-					SecondsToCheck = remainingTime;
-
-					if(remainingTime <= 0 || Cancellation.IsCancellationRequested)
-					{
-						waitHandle.Set();
-					}
-				};
-
-				Timer t = new Timer(timerCallback, null, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1));
-
-				waitHandle.WaitOne();
-
-				t.Dispose();
+				await WaitForAnotherCheck();
 			}
 
 			Cancellation.Dispose();
 			Cancellation = null;
 		}
 
+		/// <summary>
+		/// Ends when either the cancellation was requested or a full period has passed
+		/// </summary>
+		/// <returns></returns>
+		private async Task WaitForAnotherCheck()
+		{			
+			// Get the current time
+			DateTime now = DateTime.Now;
+
+			// Compute the time of the next check
+			DateTime nextCheck = now.AddSeconds(Period);
+
+			// Create a wait handle
+			AutoResetEvent waitHandle = new AutoResetEvent(false);
+
+			// Create a callback for the timer
+			TimerCallback timerCallback = (x) =>
+			{
+				// Calculate the number of remaining seconds (use Max with 0 so as not to get a negative time by accident)
+				int remainingTime = (int)Math.Max(Math.Round((nextCheck - DateTime.Now).TotalSeconds), 0);
+
+				// Assign it to the public property
+				SecondsToCheck = remainingTime;
+
+				// If the period has passed or cancellation was requested
+				if (remainingTime <= 0 || Cancellation.IsCancellationRequested)
+				{
+					// Set the wait handle
+					waitHandle.Set();
+				}
+			};
+
+			// Create the timer
+			Timer timer = new Timer(timerCallback, null, 0, 1000);
+
+			// And wait for the callback to notify that the waiting is over
+			waitHandle.WaitOne();
+
+			// Finally dispose of the timer
+			timer.Dispose();
+		}
+
+		/// <summary>
+		/// Checks whether given names are present on the website and notify for those that are
+		/// </summary>
+		/// <returns></returns>
+		private async Task CheckAndNotifyAsync()
+		{
+			// Create a client to access the website
+			var client = new HttpClient();
+
+			string siteContent = string.Empty;
+			try
+			{
+				// Get the website and store it's html in a string (the recently logged are written in it)
+				siteContent = await (await client.GetAsync(Url)).Content.ReadAsStringAsync();
+			}
+			// TODO: Add exception handling
+			catch (Exception e) { }
+
+			// Check if any names come up in the html
+			foreach (var name in Names)
+			{
+				if (siteContent.Contains(name))
+				{
+					// If so, notify
+					Notify(name);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Notifies the <see cref="Monitoring"/>
+		/// </summary>
+		/// <param name="name"></param>
 		private void Notify(string name)
 		{
 
