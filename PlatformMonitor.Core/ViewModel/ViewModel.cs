@@ -62,7 +62,7 @@ namespace PlatformMonitor.Core
 		/// <summary>
 		/// Period to wait before the next check in the new service
 		/// </summary>
-		public int NewServicePeriod { get; set; } = MonitoringService.DefaultPeriod;
+		public int NewServicePeriod { get; set; } = Monitoring.DefaultPeriod;
 
 		#endregion
 
