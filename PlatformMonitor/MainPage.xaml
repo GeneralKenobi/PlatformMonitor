@@ -9,75 +9,93 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{StaticResource Gray4Brush}"
+	<!-- Main grid -->
+	<Grid Background="{StaticResource Gray4Brush}"
 		VerticalAlignment="Stretch">
 
 		<Grid.Resources>
 			<local:BoolToPauseIconConverter x:Key="PauseGlyphConverter"/>
 		</Grid.Resources>
 
+		<!-- Wrap everything in a scrollviewer to allow scrolling -->
 		<ScrollViewer VerticalScrollBarVisibility="Auto"
 				VerticalScrollMode="Auto"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Top"
 				MaxWidth="800"
 				Margin="50">
+
 			<StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
+				<!-- Grid with URL for new service -->
 				<Grid Margin="0 5">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="50"/>
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 
+					<!-- URL Label -->
 					<TextBlock Foreground="{StaticResource WhiteBrush}"
 						Text="Url"
 						HorizontalAlignment="Center"
 						Margin="0 10"/>
+
+					<!-- URL input textbox-->
 					<TextBox Grid.Column="1"
 						Text="{Binding NewServiceUrl, Mode=TwoWay}"/>
 
 				</Grid>
 
+				<!-- Grid with Name for new service -->
 				<Grid Margin="0 5">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="50"/>
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 
+					<!-- Name label -->
 					<TextBlock Foreground="{StaticResource WhiteBrush}"
 						Text="Name"
 						HorizontalAlignment="Center"
 						Margin="0 10"/>
+
+					<!-- Name input textbox -->
 					<TextBox Grid.Column="1"
 						Text="{Binding NewServiceName, Mode=TwoWay}"/>
 
 				</Grid>
 
+				<!-- Grid with Period for the new service -->
 				<Grid Margin="0 5">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="50"/>
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 
+					<!-- Period Label -->
 					<TextBlock Foreground="{StaticResource WhiteBrush}"
 						Text="Period"
 						HorizontalAlignment="Center"
 						Margin="0 10"/>
+
+					<!-- Period input box -->
 					<TextBox Grid.Column="1"
 						Text="{Binding NewServicePeriod, Mode=TwoWay}"/>
 
 				</Grid>
 
+				<!-- Button adding a new service -->
 				<Button Content="Add and Start"
 					Style="{StaticResource DefaultButtonStyle}"
 					Margin="50 5 5 5"
-					Command="{Binding CreateNewServiceCommand}"
-					/>
+					Command="{Binding CreateNewServiceCommand}"/>
 
+				<!-- Active Services label -->
 				<TextBlock Foreground="{StaticResource WhiteBrush}"
 					Text="Active Services:"
 					Margin="10 30 10 10"/>
+
+				<!-- Grid with labels for the active services table -->
 				<Grid Margin="10 20 10 5">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="3*"/>
@@ -86,25 +104,33 @@
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
 
+					<!-- URL label -->
 					<TextBlock Foreground="{StaticResource WhiteBrush}" Text="Url"/>
+
+					<!-- Name label -->
 					<TextBlock Grid.Column="1" Foreground="{StaticResource WhiteBrush}" Text="Names"
 						Margin="10 0 0 0"/>
+
+					<!-- Next Check label-->
 					<TextBlock Grid.Column="2" Foreground="{StaticResource WhiteBrush}" Text="Next Check"
 						Margin="10 0 0 0"
 						HorizontalAlignment="Center"/>
+
 				</Grid>
 
-
+				<!-- Container with active services -->
 				<controls:ItemsContainer ItemsSource="{Binding MonitoringManager.ManagedServices}"
-				Foreground="{StaticResource White}"
-				HorizontalAlignment="Stretch"
-				HorizontalContentAlignment="Stretch"
-				Background="{StaticResource Gray3Brush}">
+					Foreground="{StaticResource White}"
+					HorizontalAlignment="Stretch"
+					HorizontalContentAlignment="Stretch"
+					Background="{StaticResource Gray3Brush}">
 
 					<controls:ItemsContainer.ItemTemplate>
+
 						<DataTemplate>
+
 							<Grid HorizontalAlignment="Stretch"
-							Name="NameListRootGrid">
+								Name="NameListRootGrid">
 
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="3*"/>
@@ -113,27 +139,32 @@
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 
+								<!-- Url -->
 								<Border Background="{StaticResource Gray2Brush}"
-								Margin="5"
-								Padding="10 0">
+									Margin="5"
+									Padding="10 0">
 									<TextBlock Text="{Binding Url}" Foreground="{StaticResource WhiteBrush}"
-									VerticalAlignment="Center"
-									HorizontalAlignment="Left"/>
+										VerticalAlignment="Center"
+										HorizontalAlignment="Left"/>
 								</Border>
-								<StackPanel Grid.Column="1"
-								Margin="5"
-								HorizontalAlignment="Stretch"
-								Background="{StaticResource Gray2Brush}">
 
-									<controls:ItemsContainer ItemsSource="{Binding Names}"								
-									Grid.Column="1"
-									Padding="5"
-									Margin="5 0"
+								<!-- Stack panel with names and input for new names -->
+								<StackPanel Grid.Column="1"
+									Margin="5"
 									HorizontalAlignment="Stretch"
-									HorizontalContentAlignment="Stretch">
+									Background="{StaticResource Gray2Brush}">
+
+									<!-- Container with searched names -->
+									<controls:ItemsContainer ItemsSource="{Binding Names}"								
+										Grid.Column="1"
+										Padding="5"
+										Margin="5 0"
+										HorizontalAlignment="Stretch"
+										HorizontalContentAlignment="Stretch">
 
 										<controls:ItemsContainer.ItemTemplate>
 											<DataTemplate>
+
 												<Grid HorizontalAlignment="Stretch">
 
 													<Grid.ColumnDefinitions>
@@ -141,93 +172,111 @@
 														<ColumnDefinition Width="50"/>
 													</Grid.ColumnDefinitions>
 
+													<!-- Textblock presenting the name -->
 													<TextBlock Text="{Binding}" Foreground="{StaticResource WhiteBrush}"
 														HorizontalAlignment="Left"
 														VerticalAlignment="Center"/>
 
+													<!-- Icon removing the name -->
 													<controls:Icon Glyph="&#xE8BB;"
-													Style="{StaticResource IconWithAnimatedBorderStyle}"
-													BorderBrush="{StaticResource Gray4Brush}"
-													Grid.Column="1"
-													Foreground="{StaticResource RedBrush}"
-													Margin="5 0 0 0"
-													HorizontalAlignment="Right"
-													Command="{Binding ElementName=NameListRootGrid, Path=DataContext.RemoveNameCommand}"
-													CommandParameter="{Binding }"/>
+														Style="{StaticResource IconWithAnimatedBorderStyle}"
+														BorderBrush="{StaticResource Gray4Brush}"
+														Grid.Column="1"
+														Foreground="{StaticResource RedBrush}"
+														Margin="5 0 0 0"
+														HorizontalAlignment="Right"
+														Command="{Binding ElementName=NameListRootGrid, Path=DataContext.RemoveNameCommand}"
+														CommandParameter="{Binding }"/>
 												</Grid>
+
 											</DataTemplate>
 										</controls:ItemsContainer.ItemTemplate>
 
 									</controls:ItemsContainer>
+
+									<!-- Input for new names -->
 									<Grid Margin="5">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="50"/>
 										</Grid.ColumnDefinitions>
 
+										<!-- Textbox for input-->
 										<TextBox Text="{Binding NewName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+										<!-- Icon adding the new name -->
 										<controls:Icon Glyph="&#xE710;"
-										Style="{StaticResource IconWithAnimatedBorderStyle}"
-										BorderBrush="{StaticResource Gray4Brush}"
-										PointerPressed="Icon_PointerPressed"										
-										AllowFocusOnInteraction="True"
-										Grid.Column="1"
-										HorizontalAlignment="Right"
-										Foreground="{StaticResource WhiteBrush}"
-										Margin="0 0 5 0"
-										Command="{Binding AddNewNameCommand}"/>
+											Style="{StaticResource IconWithAnimatedBorderStyle}"
+											BorderBrush="{StaticResource Gray4Brush}"
+											PointerPressed="Icon_PointerPressed"										
+											AllowFocusOnInteraction="True"
+											Grid.Column="1"
+											HorizontalAlignment="Right"
+											Foreground="{StaticResource WhiteBrush}"
+											Margin="0 0 5 0"
+											Command="{Binding AddNewNameCommand}"/>
 									</Grid>
 
 								</StackPanel>
+
+								<!-- Seconds until next check -->
 								<Border Background="{StaticResource Gray2Brush}"									
 									Grid.Column="2"
 									Margin="5"
 									Padding="10 0 15 0">
+
 									<TextBlock Text="{Binding SecondsToCheck}"
 										FontSize="24"
 										HorizontalAlignment="Center"
 										Foreground="{StaticResource WhiteBrush}"
 										VerticalAlignment="Center"/>
-									</Border>
 
+								</Border>
+
+								<!-- Action icons for the service (pause/play and remove) -->
 								<StackPanel Orientation="Horizontal"
 								Grid.Column="3"
 								Background="{StaticResource Gray2Brush}"
 								Margin="5"
 								Padding="5 0">
 
+									<!-- Pause/Play Icon -->
 									<controls:Icon Glyph="{Binding IsRunning, Converter={StaticResource PauseGlyphConverter}}"
-									FontSize="30"
-									Foreground="{StaticResource WhiteBrush}"
-									Style="{StaticResource IconWithAnimatedBorderStyle}"
-									BorderBrush="{StaticResource Gray4Brush}"
-									Margin="0 0 5 0"
-									Command="{Binding PauseCommand}"/>
+										FontSize="30"
+										Foreground="{StaticResource WhiteBrush}"
+										Style="{StaticResource IconWithAnimatedBorderStyle}"
+										BorderBrush="{StaticResource Gray4Brush}"
+										Margin="0 0 5 0"
+										Command="{Binding PauseCommand}"/>
 
+									<!-- Remove Icon -->
 									<controls:Icon Glyph="&#xE8BB;"
-									Command="{Binding RemoveServiceCommand}"
-									CommandParameter="{Binding }"
-									Foreground="{StaticResource RedBrush}"
-									Margin="5 0 0 0"
-									FontSize="24"
-									Style="{StaticResource IconWithAnimatedBorderStyle}"
-									BorderBrush="{StaticResource Gray4Brush}"
-									/>
+										Command="{Binding RemoveServiceCommand}"
+										CommandParameter="{Binding }"
+										Foreground="{StaticResource RedBrush}"
+										Margin="5 0 0 0"
+										FontSize="24"
+										Style="{StaticResource IconWithAnimatedBorderStyle}"
+										BorderBrush="{StaticResource Gray4Brush}"/>
 
 								</StackPanel>
 							</Grid>
+
 						</DataTemplate>
 					</controls:ItemsContainer.ItemTemplate>
 
 				</controls:ItemsContainer>
 
-
+				<!-- Log label -->
 				<TextBlock Text="Log"
 					Foreground="{StaticResource WhiteBrush}"
 					Margin="10 20 0 0"/>
+
+				<!-- Background for the log -->
 				<Border Background="{StaticResource Gray3Brush}"
 					Margin="0 10">
 
+					<!-- Container with logs -->
 					<controls:ItemsContainer ItemsSource="{Binding MonitoringManager.Log}"
 						Margin="5"						
 						Padding="10 2"
@@ -241,7 +290,7 @@
 									Text="{Binding }"/>
 							</DataTemplate>
 						</controls:ItemsContainer.ItemTemplate>
-				
+
 					</controls:ItemsContainer>
 				</Border>
 			</StackPanel>
