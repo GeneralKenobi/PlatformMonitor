@@ -207,8 +207,7 @@
 										<!-- Icon adding the new name -->
 										<controls:Icon Glyph="&#xE710;"
 											Style="{StaticResource IconWithAnimatedBorderStyle}"
-											BorderBrush="{StaticResource Gray4Brush}"
-											PointerPressed="Icon_PointerPressed"										
+											BorderBrush="{StaticResource Gray4Brush}"																
 											AllowFocusOnInteraction="True"
 											Grid.Column="1"
 											HorizontalAlignment="Right"
