@@ -29,19 +29,49 @@ namespace PlatformMonitor
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public MainPage()
+		#region Constructor
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public MainPage()
         {
 			this.InitializeComponent();
-			var vm = new ViewModel();
-			vm.MonitoringManager.CreateService("https://platforma.polsl.pl/rau3/", "Wadas", 10);
-			vm.MonitoringManager.NameSpotted += (s, e) => Button_Click(null, null);
-			vm.MonitoringManager.ManagedServices[0].StartMonitoring();
+
+			// Create a new viewmodel
+			var viewModel = new ViewModel();
+
+			// Subscribe to its monitoring manager's name spotted event
+			viewModel.MonitoringManager.NameSpotted += NameSpottedCallback;
+			
+			// And use it as a data context
+			this.DataContext = viewModel;
         }
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Callback for when someone is spotted
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void NameSpottedCallback(object sender, NameSpottedEventArgs e)
 		{
-			string title = "Activity on the platform!";
-			string content = "Filus spotted";
+			GenerateToast(e.Url, e.Name, e.Time);
+		}
+
+		/// <summary>
+		/// Generates and sends a toast notification
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="name"></param>
+		/// <param name="time"></param>
+		private void GenerateToast(string url, string name, DateTime time)
+		{
+			string title = name + " was spotted!";
+			string content = "Active on: " + url + " on " + time.ToLongDateString() + ", " + time.ToLongTimeString();
 
 			// Construct the visuals of the toast
 			ToastVisual visual = new ToastVisual()
@@ -63,7 +93,7 @@ namespace PlatformMonitor
 				}
 			};
 
-			// Now we can construct the final toast content
+			// Construct the final toast content
 			ToastContent toastContent = new ToastContent()
 			{
 				Visual = visual,
@@ -72,11 +102,22 @@ namespace PlatformMonitor
 			// And create the toast notification
 			var toast = new ToastNotification(toastContent.GetXml());
 
-			toast.ExpirationTime = DateTime.Now.AddDays(1);
-			toast.Tag = DateTime.Now.ToShortDateString();
-			toast.Group = "PlatformMonitor";
+			// If the same user appeared previously, remove the old notification
+			ToastNotificationManager.History.Remove(name);
 
+			// Set the expiration to now day
+			toast.ExpirationTime = DateTime.Now.AddDays(1);
+
+			// Set the name as the tag
+			toast.Tag = name;
+
+			// And the group name
+			toast.Group = "PlatformMonitor";
+			
+			// Show the notification
 			ToastNotificationManager.CreateToastNotifier().Show(toast);
 		}
+
+		#endregion
 	}
 }

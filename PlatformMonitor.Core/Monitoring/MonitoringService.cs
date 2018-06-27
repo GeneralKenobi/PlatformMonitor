@@ -1,19 +1,32 @@
 ﻿using CSharpEnhanced.CoreClasses;
+using CSharpEnhanced.ICommands;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PlatformMonitor.Core
 {
 	/// <summary>
 	/// Represents a service that checks presence on one given url.
 	/// </summary>
-    public class MonitoringService : INotifyPropertyChangedImplemented
+    public class MonitoringService : INotifyPropertyChanged
     {
+		#region Property changed event
+
+		/// <summary>
+		/// Event raised whenever one of proprties changes
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
+
 		#region Constructor
 
 		/// <summary>
@@ -22,15 +35,19 @@ namespace PlatformMonitor.Core
 		/// <param name="url">Url of the site to check (typically one of educational platforms)</param>
 		/// <param name="name">Name of the person to look for</param>
 		/// <param name="period">Period between refreshing, in seconds. Should fit between the min and max allowed value</param>
-		public MonitoringService(string url, ObservableCollection<string> names, EventHandler<NameSpottedEventArgs> eventToRaise,
+		public MonitoringService(string url, ObservableCollection<string> names, ICommand removeServiceCommand,
 			int period = 30)
 		{
 			Url = url;
 			Names = names;
+			RemoveServiceCommand = removeServiceCommand;
 			Period = CheckPeriodValue(period);
-			EventToRaise = eventToRaise;
-		}
 
+			AddNewNameCommand = new RelayCommand(AddNewName);
+			RemoveNameCommand = new RelayParametrizedCommand(RemoveName);
+			PauseCommand = new RelayCommand(Pause);
+		}
+		
 		#endregion		
 
 		#region Public Properties
@@ -38,7 +55,7 @@ namespace PlatformMonitor.Core
 		/// <summary>
 		/// Seconds remaining until the next check
 		/// </summary>
-		public int SecondsToCheck = 0;
+		public int SecondsToCheck { get; private set; }
 
 		/// <summary>
 		/// Indicates whether this service is currently running
@@ -60,35 +77,50 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		public int Period { get; private set; }
 
+		/// <summary>
+		/// Name to add when <see cref="AddNewNameCommand"/> is invoked
+		/// </summary>
+		public string NewName { get; set; }
+
+		#endregion
+
+		#region Commands
+
+		/// <summary>
+		/// Adds a new name to the list of the searched names
+		/// </summary>
+		public ICommand AddNewNameCommand { get; private set; }
+
+		/// <summary>
+		/// Removes a name (passed parameter) from the list of the searched commands
+		/// </summary>
+		public ICommand RemoveNameCommand { get; private set; }
+
+		/// <summary>
+		/// Pauses or resumes this service
+		/// </summary>
+		public ICommand PauseCommand { get; private set; }
+
+		/// <summary>
+		/// Removes this service (which should be the parameter) from the owning <see cref="Monitoring"/>
+		/// </summary>
+		public ICommand RemoveServiceCommand { get; private set; }
+
 		#endregion
 
 		#region Private properties
 
 		/// <summary>
-		/// Provides means for canelling an ongoing monitoring
+		/// Provides means for cancelling an ongoing monitoring
 		/// </summary>
 		private CancellationTokenSource Cancellation { get; set; }
 
 		/// <summary>
 		/// Event to raise when someone was found on the platform
 		/// </summary>
-		private EventHandler<NameSpottedEventArgs> EventToRaise { get; set; }
+		public EventHandler<NameSpottedEventArgs> NameSpotted;
 
-		#endregion
-
-		#region Public static properties
-
-		/// <summary>
-		/// The minimum value of period allowed
-		/// </summary>
-		public static int MinPeriod => 10;
-
-		/// <summary>
-		/// The maximum value of period allowed
-		/// </summary>
-		public static int MaxPeriod => 240;
-
-		#endregion
+		#endregion		
 
 		#region Public methods
 
@@ -97,8 +129,10 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		public void StartMonitoring()
 		{
-			IsRunning = true;
-			MonitoringAsync();
+			if (!IsRunning)
+			{
+				MonitoringAsync();
+			}
 		}
 
 		/// <summary>
@@ -106,8 +140,11 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		public void StopMonitoring()
 		{
-			IsRunning = false;
-			Cancellation?.Cancel();
+			if (IsRunning)
+			{
+				SecondsToCheck = Period;
+				Cancellation?.Cancel();
+			}
 		}
 
 		#endregion
@@ -115,11 +152,54 @@ namespace PlatformMonitor.Core
 		#region Private methods
 
 		/// <summary>
+		/// Method for <see cref="PauseCommand"/>
+		/// </summary>
+		private void Pause()
+		{
+			if (IsRunning)
+			{
+				StopMonitoring();
+			}
+			else
+			{
+				StartMonitoring();
+			}
+		}
+
+		/// <summary>
+		/// Method for <see cref="RemoveNameCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void RemoveName(object parameter)
+		{
+			if(parameter is string name)
+			{
+				Names.Remove(name);
+			}
+		}
+
+		/// <summary>
+		/// Method for <see cref="AddNewNameCommand"/>
+		/// </summary>
+		private void AddNewName()
+		{
+			if(!string.IsNullOrWhiteSpace(NewName))
+			{
+				Names.Add(NewName);
+			}
+
+			NewName = string.Empty;
+		}
+
+		/// <summary>
 		/// Task that monitors asynchronously the Url
 		/// </summary>
 		/// <returns></returns>
 		private async Task MonitoringAsync()
 		{
+			IsRunning = true;
+			SecondsToCheck = Period;
+
 			// Create a new cancellation token source
 			Cancellation = new CancellationTokenSource();
 			
@@ -131,6 +211,9 @@ namespace PlatformMonitor.Core
 				await WaitForAnotherCheck();
 			}
 
+			IsRunning = false;
+			SecondsToCheck = Period;
+
 			Cancellation.Dispose();
 			Cancellation = null;
 		}
@@ -140,41 +223,16 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		/// <returns></returns>
 		private async Task WaitForAnotherCheck()
-		{			
-			// Get the current time
-			DateTime now = DateTime.Now;
+		{
+			int remainingSeconds = Period;			
 
-			// Compute the time of the next check
-			DateTime nextCheck = now.AddSeconds(Period);
-
-			// Create a wait handle
-			AutoResetEvent waitHandle = new AutoResetEvent(false);
-
-			// Create a callback for the timer
-			TimerCallback timerCallback = (x) =>
+			while(remainingSeconds > 1 && !Cancellation.IsCancellationRequested)
 			{
-				// Calculate the number of remaining seconds (use Max with 0 so as not to get a negative time by accident)
-				int remainingTime = (int)Math.Max(Math.Round((nextCheck - DateTime.Now).TotalSeconds), 0);
+				--remainingSeconds;
+				SecondsToCheck = remainingSeconds;
 
-				// Assign it to the public property
-				SecondsToCheck = remainingTime;
-
-				// If the period has passed or cancellation was requested
-				if (remainingTime <= 0 || Cancellation.IsCancellationRequested)
-				{
-					// Set the wait handle
-					waitHandle.Set();
-				}
-			};
-
-			// Create the timer
-			Timer timer = new Timer(timerCallback, null, 0, 1000);
-
-			// And wait for the callback to notify that the waiting is over
-			waitHandle.WaitOne();
-
-			// Finally dispose of the timer
-			timer.Dispose();
+				await Task.Delay(1000);
+			}			
 		}
 
 		/// <summary>
@@ -210,7 +268,8 @@ namespace PlatformMonitor.Core
 		/// Notifies the <see cref="Monitoring"/>
 		/// </summary>
 		/// <param name="name"></param>
-		private void Notify(string name) => EventToRaise.Invoke(this, new NameSpottedEventArgs(Url, name, DateTime.Now));
+		private void Notify(string name) => NameSpotted?.Invoke(this, new NameSpottedEventArgs(Url, name, DateTime.Now));
+		
 
 		/// <summary>
 		/// Checks if the period falls withing the allowed range and returns it. If not, the closest correct value will be returned.
@@ -219,14 +278,14 @@ namespace PlatformMonitor.Core
 		/// <returns></returns>
 		private int CheckPeriodValue(int period)
 		{
-			if (period < MinPeriod)
+			if (period < Monitoring.MinPeriod)
 			{
-				return MinPeriod;
+				return Monitoring.MinPeriod;
 			}
 
-			if(period > MaxPeriod)
+			if(period > Monitoring.MaxPeriod)
 			{
-				return MaxPeriod;
+				return Monitoring.MaxPeriod;
 			}
 
 			return period;

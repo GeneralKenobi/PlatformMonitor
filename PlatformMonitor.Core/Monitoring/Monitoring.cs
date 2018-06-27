@@ -1,19 +1,26 @@
-﻿using System;
+﻿using CSharpEnhanced.ICommands;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Text;
+using System.Windows.Input;
 
 namespace PlatformMonitor.Core
 {
-    public class Monitoring
-    {
-		#region Public properties
-		
+	/// <summary>
+	/// Container for <see cref="MonitoringService"/>s, propagates all events and creates a Log
+	/// </summary>
+	public class Monitoring : INotifyPropertyChanged
+	{
+		#region Events
+
 		/// <summary>
-		/// List with all currently managed <see cref="MonitoringService"/>s
+		/// Invoked whenever a property changes
 		/// </summary>
-		public List<MonitoringService> ManagedServices { get; private set; } = new List<MonitoringService>();
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		/// <summary>
 		/// Event raised when one of the managed <see cref="MonitoringService"/>s finds one of its targets
@@ -22,19 +29,127 @@ namespace PlatformMonitor.Core
 
 		#endregion
 
+		#region Constructor
+
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public Monitoring()
+		{
+			ManagedServices = new ReadOnlyObservableCollection<MonitoringService>(_ManagedServices);
+			Log = new ReadOnlyObservableCollection<string>(_Log);
+
+			RemoveServiceCommand = new RelayParametrizedCommand(RemoveService);
+		}
+
+		#endregion
+
+		#region Commands
+
+		/// <summary>
+		/// Removes a <see cref="MonitoringService"/> given by parameter from the <see cref="ManagedServices"/> collection
+		/// </summary>
+		public ICommand RemoveServiceCommand { get; set; }
+
+		#endregion
+
+		#region Private members
+
+		/// <summary>
+		/// Backign store for <see cref="ManagedServices"/>
+		/// </summary>
+		private ObservableCollection<MonitoringService> _ManagedServices = new ObservableCollection<MonitoringService>();
+
+		/// <summary>
+		/// Backing store for <see cref="Log"/>
+		/// </summary>
+		private ObservableCollection<string> _Log = new ObservableCollection<string>();
+
+		#endregion
+
+		#region Public properties
+
+		/// <summary>
+		/// Collection with all currently handled <see cref="MonitoringService"/>s
+		/// </summary>
+		public ReadOnlyObservableCollection<MonitoringService> ManagedServices { get; set; }
+
+		/// <summary>
+		/// Collection of strings representing log entries with information about spotting of a target
+		/// </summary>
+		public ReadOnlyObservableCollection<string> Log { get; set; }
+
+
+		#endregion
+
+		#region Public static properties
+
+		/// <summary>
+		/// The minimum value of period allowed
+		/// </summary>
+		public static int MinPeriod => 10;
+
+		/// <summary>
+		/// The default period
+		/// </summary>
+		public static int DefaultPeriod => 30;
+
+		/// <summary>
+		/// The maximum value of period allowed
+		/// </summary>
+		public static int MaxPeriod => 240;
+
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Method for <see cref="RemoveServiceCommand"/>
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void RemoveService(object parameter)
+		{
+			if(parameter is MonitoringService service)
+			{
+				service.StopMonitoring();
+				_ManagedServices.Remove(service);
+			}
+
+		}
+
+		/// <summary>
+		/// Propagates an event raised in a <see cref="MonitoringService"/> from <see cref="_ManagedServices"/> and adds its info
+		/// to the log (<see cref="_Log"/>)
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void PropagateEvent(object sender, NameSpottedEventArgs e)
+		{
+			_Log.Add(e.Time.ToLongDateString() + ", " + e.Time.ToLongTimeString() + "\t" + e.Name + "\tspotted on " + e.Url);
+			NameSpotted?.Invoke(sender, e);
+		}
+
+		#endregion
+
 		#region Public methods
 
 		/// <summary>
-		/// Creates a new service for monitoring
+		/// Creates a new service for monitoring and starts it
 		/// </summary>
 		/// <param name="url"></param>
 		/// <param name="name"></param>
 		/// <param name="period"></param>
 		public void CreateService(string url, string name, int period)
 		{
-			ManagedServices.Add(new MonitoringService(url, new ObservableCollection<string>() { url }, NameSpotted, 10));
-		}
+			var newAddition = new MonitoringService(url, new ObservableCollection<string>() { name }, RemoveServiceCommand, period);
 
-		#endregion		
+			newAddition.NameSpotted += PropagateEvent;
+
+			_ManagedServices.Add(newAddition);
+
+			newAddition.StartMonitoring();
+		}
+		
+		#endregion
 	}
 }
