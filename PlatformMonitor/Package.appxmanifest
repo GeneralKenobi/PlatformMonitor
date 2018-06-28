@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
-xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  IgnorableNamespaces="uap mp">
-  <Identity Name="18684Szymonogaa.EducationalPlatformMonitor" Publisher="CN=9850D2F0-91CF-44EA-98B9-C6D715175D84" Version="1.1.3.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+  <Identity Name="18684Szymonogaa.EducationalPlatformMonitor" Publisher="CN=9850D2F0-91CF-44EA-98B9-C6D715175D84" Version="1.1.7.0" />
   <mp:PhoneIdentity PhoneProductId="c48c1f6c-5863-40d3-92c8-9a7c6b6ec68a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Educational Platform Monitor</DisplayName>
@@ -26,6 +23,6 @@ xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
     </Application>
   </Applications>
   <Capabilities>
-	  <Capability Name="internetClient" />	  
+    <Capability Name="internetClient" />
   </Capabilities>
 </Package>

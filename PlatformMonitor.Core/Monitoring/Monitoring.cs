@@ -2,8 +2,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.ApplicationModel.ExtendedExecution;
+using Windows.Foundation;
 
 namespace PlatformMonitor.Core
 {
@@ -53,6 +56,11 @@ namespace PlatformMonitor.Core
 		#endregion
 
 		#region Private members
+
+		/// <summary>
+		/// Session used to ensure that when the app is minimized it won't be suspended
+		/// </summary>
+		private ExtendedExecutionSession _Session;
 
 		/// <summary>
 		/// Backign store for <see cref="ManagedServices"/>
@@ -107,12 +115,14 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		private void RequestExtendedSession()
 		{
-			var session = new ExtendedExecutionSession();
+			
+			_Session = new ExtendedExecutionSession();
 
-			session.Reason = ExtendedExecutionReason.Unspecified;
-			session.Description = "Periodic check of the website";
+			_Session.Reason = ExtendedExecutionReason.Unspecified;
+			_Session.Description = "Periodic check of the website";
 
-			ExtendedExecutionResult decision = session.RequestExtensionAsync().GetResults();
+			_Session.RequestExtensionAsync();
+			
 		}
 
 		/// <summary>
