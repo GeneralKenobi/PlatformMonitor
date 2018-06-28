@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PlatformMonitor.Core
 {
 	/// <summary>
 	/// Arguments for an event notifying that someone was spotted
 	/// </summary>
-    public class NameSpottedEventArgs : EventArgs
+	public class NameSpottedEventArgs : EventArgs
     {
 		#region Public properties
 

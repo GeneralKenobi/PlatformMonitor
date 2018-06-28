@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
 namespace PlatformMonitor
@@ -10,7 +6,7 @@ namespace PlatformMonitor
 	/// <summary>
 	/// If value is a bool return a play icon for false and pause icon for true. Otherwise returns <see cref="string.Empty"/>
 	/// </summary>
-    public class BoolToPauseIconConverter : IValueConverter
+	public class BoolToPauseIconConverter : IValueConverter
     {
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{

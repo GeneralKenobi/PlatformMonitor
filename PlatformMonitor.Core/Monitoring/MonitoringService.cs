@@ -1,12 +1,8 @@
-﻿using CSharpEnhanced.CoreClasses;
-using CSharpEnhanced.ICommands;
-using PropertyChanged;
+﻿using CSharpEnhanced.ICommands;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -16,7 +12,7 @@ namespace PlatformMonitor.Core
 	/// <summary>
 	/// Represents a service that checks presence on one given url.
 	/// </summary>
-    public class MonitoringService : INotifyPropertyChanged
+	public class MonitoringService : INotifyPropertyChanged
     {
 		#region Property changed event
 
@@ -196,13 +192,13 @@ namespace PlatformMonitor.Core
 		/// </summary>
 		/// <returns></returns>
 		private async Task MonitoringAsync()
-		{
+		{			
 			IsRunning = true;
 			SecondsToCheck = Period;
 
 			// Create a new cancellation token source
-			Cancellation = new CancellationTokenSource();
-			
+			Cancellation = new CancellationTokenSource();						
+
 			// Keep going until cancellation is requested
 			while (!Cancellation.IsCancellationRequested)
 			{
@@ -210,7 +206,7 @@ namespace PlatformMonitor.Core
 
 				await WaitForAnotherCheck();
 			}
-
+			
 			IsRunning = false;
 			SecondsToCheck = Period;
 
@@ -291,6 +287,6 @@ namespace PlatformMonitor.Core
 			return period;
 		}
 
-		#endregion		
+		#endregion
 	}
 }

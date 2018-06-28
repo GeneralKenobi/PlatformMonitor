@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformMonitor", "PlatformMonitor\PlatformMonitor.csproj", "{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlatformMonitor.Core", "PlatformMonitor.Core\PlatformMonitor.Core.csproj", "{51745A19-3753-4F57-944D-A942845E337C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlatformMonitor.Core", "PlatformMonitor.Core\PlatformMonitor.Core.csproj", "{51745A19-3753-4F57-944D-A942845E337C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|Any CPU.Build.0 = Debug|x86
+		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|ARM.ActiveCfg = Debug|ARM
 		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|ARM.Build.0 = Debug|ARM
 		{FD190791-4E8C-4D4A-9335-85D1DB2AFBF4}.Debug|ARM.Deploy.0 = Debug|ARM
