@@ -1,49 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   IgnorableNamespaces="uap mp">
-
-  <Identity
-    Name="12f4bf00-b808-426e-b7cf-85d0f4a3b471"
-    Publisher="CN=Szymon"
-    Version="1.0.0.0" />
-
-  <mp:PhoneIdentity PhoneProductId="12f4bf00-b808-426e-b7cf-85d0f4a3b471" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
-
+  <Identity Name="18684Szymonogaa.EducationalPlatformMonitor" Publisher="CN=9850D2F0-91CF-44EA-98B9-C6D715175D84" Version="1.1.3.0" />
+  <mp:PhoneIdentity PhoneProductId="c48c1f6c-5863-40d3-92c8-9a7c6b6ec68a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>PlatformMonitor</DisplayName>
-    <PublisherDisplayName>Szymon</PublisherDisplayName>
+    <DisplayName>Educational Platform Monitor</DisplayName>
+    <PublisherDisplayName>Szymon Żogała</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
   </Dependencies>
-
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
-
   <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="PlatformMonitor.App">
-      <uap:VisualElements
-        DisplayName="PlatformMonitor"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="PlatformMonitor"
-        BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="PlatformMonitor.App">
+      <uap:VisualElements DisplayName="Educational Platform Monitor" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="PlatformMonitor" BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
+        </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>
-
   <Capabilities>
-    <Capability Name="internetClient" />
+	  <Capability Name="internetClient" />	  
   </Capabilities>
 </Package>

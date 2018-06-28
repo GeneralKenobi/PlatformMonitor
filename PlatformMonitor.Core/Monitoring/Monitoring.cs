@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Input;
+using Windows.ApplicationModel.ExtendedExecution;
 
 namespace PlatformMonitor.Core
 {
@@ -40,6 +41,8 @@ namespace PlatformMonitor.Core
 			Log = new ReadOnlyObservableCollection<string>(_Log);
 
 			RemoveServiceCommand = new RelayParametrizedCommand(RemoveService);
+
+			RequestExtendedSession();
 		}
 
 		#endregion
@@ -102,6 +105,19 @@ namespace PlatformMonitor.Core
 		#endregion
 
 		#region Private methods
+
+		/// <summary>
+		/// Requests an extended session from the OS so as not to be suspended
+		/// </summary>
+		private void RequestExtendedSession()
+		{
+			var session = new ExtendedExecutionSession();
+
+			session.Reason = ExtendedExecutionReason.Unspecified;
+			session.Description = "Periodic check of the website";
+
+			ExtendedExecutionResult decision = session.RequestExtensionAsync().GetResults();
+		}
 
 		/// <summary>
 		/// Method for <see cref="RemoveServiceCommand"/>
